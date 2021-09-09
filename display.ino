@@ -6,6 +6,7 @@
 #define DIO 5
 #define DIGITS 4
 #define BUTTON 10
+#define LED 12
 
 uint8_t dots = 0b01000000; // Add dots or colons (depends on display module)
 
@@ -30,7 +31,7 @@ unsigned long debounceDelay = 80;    // the debounce time; increase if the outpu
 int buttonState;             // the current reading from the input pin
 int lastButtonState = LOW;   // the previous reading from the input pin
 bool active = false;
-unsigned long accumulated = 5000;
+unsigned long accumulated = 0;
 
 void setup()
 {
@@ -38,6 +39,7 @@ void setup()
     startTime = millis();
     Serial.begin(9600);
     pinMode(BUTTON, INPUT);
+    pinMode(LED, OUTPUT);
     digitalWrite(BUTTON, HIGH);
     updateDisplay(accumulated);
 }
@@ -82,10 +84,12 @@ void loop()
                 if(active){
                     Serial.print("START\n");
                     startTime = timeNow;
+                    digitalWrite(LED, HIGH);
                 }
                 else{
                     Serial.print("STOP\n");
                     accumulated += (timeNow - startTime) / 1000;
+                    digitalWrite(LED, LOW);
                 }
             }
         }
